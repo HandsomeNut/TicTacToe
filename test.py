@@ -7,14 +7,14 @@ import pygame
 root = Tk()
 root.title(" Tic Tac Toe X O ")
 root.resizable(False, False)
-img = PhotoImage(file="TicTacToe.png")
+img = PhotoImage(file="Data/TicTacToe.png")
 root.tk.call("wm", "iconphoto", root._w, img)
 tokenWin = None
 
 symbolSet = [[0, 0]]
 symbolPos = [[50, 50], [50, 150], [50, 250], [150, 50], [150, 150], [150, 250], [250, 50], [250, 150], [250, 250]]
-playBoard = [X for i in range(9)]
-path = ["Tac.png", "Tic.png"]
+playBoard = [i+1 for i in range(9)]
+path = ["Data/Tac.png", "Data/Tic.png"]
 großeBilder = []
 kleineBilder = []
 pygame.mixer.init()
@@ -67,7 +67,7 @@ def bildDa(bildCoords):
             return True
 
 def playSound():
-    foo = ["stroke1.wav", "stroke2.wav", "stroke3.wav"]
+    foo = ["Data/stroke1.wav", "Data/stroke2.wav", "Data/stroke3.wav"]
     pygame.mixer.music.load(choice(foo))
     pygame.mixer.music.play()
 
@@ -98,7 +98,7 @@ def makeMove(event):
         playBoard[0] = spielStein
         playSound()
 
-    elif event.x < 100 > event.y > 100 and not bildDa(symbolPos[1]):
+    elif event.x < 100 < event.y < 200 and not bildDa(symbolPos[1]):
         symbolSet.append(w.create_image(50, 150, anchor=CENTER, image=großeBilder[spielStein]))
         playBoard[1] = spielStein
         playSound()
@@ -146,9 +146,49 @@ def makeMove(event):
     for token in playBoard:
         print(token)
 
+    # # WinCheck
+    # test = True
+    #
+    # for check in range(0,2):
+    #     if playBoard[check] == playBoard[check + 1]:
+    #         test = False
+    #     else:
+    #         test = True
+    #         break
+    #
+    # for check in range(3, 5):
+    #     if playBoard[check] == playBoard[check + 1]:
+    #         test = False
+    #     else:
+    #         test = True
+    #         break
+    #
+    # for check in range(6, 8):
+    #     if playBoard[check] == playBoard[check + 1]:
+    #         test = False
+    #     else:
+    #         test = True
+    #         break
+    #
+    # for check in range(0, 4, 4):
+    #     if playBoard[check] == playBoard[check + 4]:
+    #         test = False
+    #     else:
+    #         test = True
+    #         break
+    #
+    # for check in range(2, 4, 2):
+    #     if playBoard[check] == playBoard[check + 2]:
+    #         test = False
+    #     else:
+    #         test = True
+    #         break
+    #
+    # if test:
+    #     msg.showinfo(" GEWONNEN ", " Du hast gewonnen!!! ")
 
 def _new():
-    global symbolSet, tokenWin, button1
+    global symbolSet, tokenWin, button1, playBoard
 
     w.delete("all")
     w.create_line(0, 100, 300, 100, width=3)
@@ -159,6 +199,7 @@ def _new():
     button1 = Button(root, width=34, height=17, text=" SPIELEN ", command=messageWindow)
     button1.grid(column=0, row=0)
     tokenWin = None
+    playBoard = [i + 1 for i in range(9)]
 
 
 frameSet1 = LabelFrame(root, text=" Spielfeld ").grid(column=0, row=0)
