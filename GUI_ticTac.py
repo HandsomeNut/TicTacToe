@@ -89,43 +89,19 @@ class MainGame:
         # Reihe wird überprüft
         for y in range(len(playBoard)):
             if self.fieldsTheSame(y, 0, playBoard, 0, 1):
-                self.turnMade()
-                spieler ="Spieler " + str(self.turnPlayer + 1)
-                self.playSound(self.winSound)
-                if msg.askyesno(" GEWONNEN!", spieler + " hat das Spiel gewonnen!\n Noch eine Runde?"):
-                    self._new()
-                else:
-                    self._quit()
+                self.winMessage()
 
         # Spalte wird überprüft
         for x in range(len(playBoard)):
             if self.fieldsTheSame(0, x, playBoard, 1, 0):
-                self.turnMade()
-                spieler = "Spieler " + str(self.turnPlayer + 1)
-                self.playSound(self.winSound)
-                if msg.askyesno(" GEWONNEN!", spieler + " hat das Spiel gewonnen!\n Noch eine Runde?"):
-                    self._new()
-                else:
-                    self._quit()
+                self.winMessage()
 
         # Check diagonal
         if self.fieldsTheSame(0, 0, playBoard, 1, 1):
-            self.turnMade()
-            spieler = "Spieler " + str(self.turnPlayer + 1)
-            self.playSound(self.winSound)
-            if msg.askyesno(" GEWONNEN!", spieler + " hat das Spiel gewonnen!\n Noch eine Runde?"):
-                self._new()
-            else:
-                self._quit()
+            self.winMessage()
 
         if self.fieldsTheSame(2, 0, playBoard, -1, 1):
-            self.turnMade()
-            spieler = "Spieler " + str(self.turnPlayer + 1)
-            self.playSound(self.winSound)
-            if msg.askyesno(" GEWONNEN!", spieler + " hat das Spiel gewonnen!\n Noch eine Runde?"):
-                self._new()
-            else:
-                self._quit()
+            self.winMessage()
 
         if self.draw():
             if msg.askyesno(" Unentschieden", "Keiner hat gewonnen!\n Noch eine Runde?"):
@@ -140,6 +116,15 @@ class MainGame:
                 if self.playBoard[col][row] == " ":
                     return False
         return True
+
+    def winMessage(self):
+        self.turnMade()
+        spieler = "Spieler " + str(self.turnPlayer + 1)
+        self.playSound(self.winSound)
+        if msg.askyesno(" GEWONNEN!", spieler + " hat das Spiel gewonnen!\n Noch eine Runde?"):
+            self._new()
+        else:
+            self._quit()
 
     def tokenExists(self, bildCoords):
         for i in range(len(self.symbolSet)):
