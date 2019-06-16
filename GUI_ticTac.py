@@ -1,18 +1,18 @@
-import tkinter as tk
-from tkinter import messagebox as msg, CENTER
-from PIL import ImageTk, Image
-from random import choice
-import pygame
 import copy
+import tkinter as tk
+from random import choice
+from tkinter import messagebox as msg, CENTER
+
+import pygame
+from PIL import ImageTk, Image
+
 
 class Move:
-
     index = []
     score = 0
 
 
 class MainGame:
-
     # # # Initialisierung der Klassenvariablen
 
     # # GUI-Variablen
@@ -25,7 +25,7 @@ class MainGame:
 
     # # Spiellogikvariablen
     tokens = []
-    turnPlayer = 0 # 0 => Spieler 1 am Zug, 1 => Spieler 2 am Zug
+    turnPlayer = 0  # 0 => Spieler 1 am Zug, 1 => Spieler 2 am Zug
     symbolSet = [[0, 0]]
     symbolPos = [[50, 50], [50, 150], [50, 250], [150, 50], [150, 150], [150, 250], [250, 50], [250, 150], [250, 250]]
     playBoard = [[" " for i in range(3)] for i in range(3)]
@@ -91,8 +91,6 @@ class MainGame:
     # Gewinnbedingen erfüllt?
     def winCheck(self, board):
 
-
-
         # Reihe wird überprüft
         for y in range(len(board)):
             if self.fieldsTheSame(y, 0, board, 0, 1):
@@ -146,65 +144,72 @@ class MainGame:
 
         # Kontrolle Linke Spalte
         if event.x < 100 and event.y < 100 and not self.tokenExists(self.symbolPos[0]):
-            self.symbolSet.append(self.gameField.create_image(50, 50, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
+            self.symbolSet.append(
+                self.gameField.create_image(50, 50, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
             self.playBoard[0][0] = self.tokens[self.turnPlayer]
             self.playSound(self.stroke)
             self.turnMade()
 
         elif event.x < 100 < event.y < 200 and not self.tokenExists(self.symbolPos[1]):
-            self.symbolSet.append(self.gameField.create_image(50, 150, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
+            self.symbolSet.append(
+                self.gameField.create_image(50, 150, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
             self.playBoard[1][0] = self.tokens[self.turnPlayer]
             self.playSound(self.stroke)
             self.turnMade()
 
         elif event.x < 100 and event.y > 200 and not self.tokenExists(self.symbolPos[2]):
-            self.symbolSet.append(self.gameField.create_image(50, 250, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
+            self.symbolSet.append(
+                self.gameField.create_image(50, 250, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
             self.playBoard[2][0] = self.tokens[self.turnPlayer]
             self.playSound(self.stroke)
             self.turnMade()
 
         # Kontrolle mittlere Spalte
         elif event.y < 100 < event.x < 200 and not self.tokenExists(self.symbolPos[3]):
-            self.symbolSet.append(self.gameField.create_image(150, 50, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
+            self.symbolSet.append(
+                self.gameField.create_image(150, 50, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
             self.playBoard[0][1] = self.tokens[self.turnPlayer]
             self.playSound(self.stroke)
             self.turnMade()
 
         elif 100 < event.x < 200 and 100 < event.y < 200 and not self.tokenExists(self.symbolPos[4]):
-            self.symbolSet.append(self.gameField.create_image(150, 150, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
+            self.symbolSet.append(
+                self.gameField.create_image(150, 150, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
             self.playBoard[1][1] = self.tokens[self.turnPlayer]
             self.playSound(self.stroke)
             self.turnMade()
 
         elif event.x > 100 and event.x < 200 < event.y and not self.tokenExists(self.symbolPos[5]):
-            self.symbolSet.append(self.gameField.create_image(150, 250, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
+            self.symbolSet.append(
+                self.gameField.create_image(150, 250, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
             self.playBoard[2][1] = self.tokens[self.turnPlayer]
             self.playSound(self.stroke)
             self.turnMade()
 
         # Kontrolle rechte Spalte
         elif event.x > 200 and event.y < 100 and not self.tokenExists(self.symbolPos[6]):
-            self.symbolSet.append(self.gameField.create_image(250, 50, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
+            self.symbolSet.append(
+                self.gameField.create_image(250, 50, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
             self.playBoard[0][2] = self.tokens[self.turnPlayer]
             self.playSound(self.stroke)
             self.turnMade()
 
         elif event.x > 200 > event.y and event.y > 100 and not self.tokenExists(self.symbolPos[7]):
-            self.symbolSet.append(self.gameField.create_image(250, 150, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
+            self.symbolSet.append(
+                self.gameField.create_image(250, 150, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
             self.playBoard[1][2] = self.tokens[self.turnPlayer]
             self.playSound(self.stroke)
             self.turnMade()
 
         elif event.x > 200 and event.y > 200 and not self.tokenExists(self.symbolPos[8]):
-            self.symbolSet.append(self.gameField.create_image(250, 250, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
+            self.symbolSet.append(
+                self.gameField.create_image(250, 250, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
             self.playBoard[2][2] = self.tokens[self.turnPlayer]
             self.playSound(self.stroke)
             self.turnMade()
 
         for i in range(len(self.symbolSet)):
             print(self.gameField.coords(self.symbolSet[i]))
-
-
 
         # # Player WinCheck
         if self.winCheck(self.playBoard):
@@ -215,27 +220,30 @@ class MainGame:
             else:
                 self._quit()
 
+        for token in self.playBoard:
+            print(token)
+        print(self.turnPlayer)
+
         # AI Turn
         if self.turnPlayer == 1:
-            board = copy.deepcopy(self.playBoard)
             player = 1
-            aiMove = self.minimax(player, board).index
+            aiMove = self.minimax(player, self.playBoard).index
 
             # AÍ Drawphase
-            if aiMove == (0,0):
+            if aiMove == (0, 0):
                 self.symbolSet.append(self.gameField.create_image(50, 50, anchor=CENTER,
                                                                   image=self.bigPics[self.tokens[self.turnPlayer]]))
                 self.playBoard[0][0] = self.tokens[self.turnPlayer]
                 self.playSound(self.stroke)
                 self.turnMade()
-            elif aiMove == (1,0):
+            elif aiMove == (1, 0):
                 self.symbolSet.append(self.gameField.create_image(50, 150, anchor=CENTER,
                                                                   image=self.bigPics[self.tokens[self.turnPlayer]]))
                 self.playBoard[1][0] = self.tokens[self.turnPlayer]
                 self.playSound(self.stroke)
                 self.turnMade()
 
-            elif aiMove == (2,0):
+            elif aiMove == (2, 0):
                 self.symbolSet.append(self.gameField.create_image(50, 250, anchor=CENTER,
                                                                   image=self.bigPics[self.tokens[self.turnPlayer]]))
                 self.playBoard[2][0] = self.tokens[self.turnPlayer]
@@ -243,21 +251,21 @@ class MainGame:
                 self.turnMade()
 
                 # Kontrolle mittlere Spalte
-            elif aiMove == (0,1):
+            elif aiMove == (0, 1):
                 self.symbolSet.append(self.gameField.create_image(150, 50, anchor=CENTER,
                                                                   image=self.bigPics[self.tokens[self.turnPlayer]]))
                 self.playBoard[0][1] = self.tokens[self.turnPlayer]
                 self.playSound(self.stroke)
                 self.turnMade()
 
-            elif aiMove == (1,1):
+            elif aiMove == (1, 1):
                 self.symbolSet.append(self.gameField.create_image(150, 150, anchor=CENTER,
                                                                   image=self.bigPics[self.tokens[self.turnPlayer]]))
                 self.playBoard[1][1] = self.tokens[self.turnPlayer]
                 self.playSound(self.stroke)
                 self.turnMade()
 
-            elif aiMove == (1,2):
+            elif aiMove == (2, 1):
                 self.symbolSet.append(self.gameField.create_image(150, 250, anchor=CENTER,
                                                                   image=self.bigPics[self.tokens[self.turnPlayer]]))
                 self.playBoard[2][1] = self.tokens[self.turnPlayer]
@@ -265,27 +273,26 @@ class MainGame:
                 self.turnMade()
 
                 # Kontrolle rechte Spalte
-            elif aiMove == (2,0):
+            elif aiMove == (0, 2):
                 self.symbolSet.append(self.gameField.create_image(250, 50, anchor=CENTER,
                                                                   image=self.bigPics[self.tokens[self.turnPlayer]]))
                 self.playBoard[0][2] = self.tokens[self.turnPlayer]
                 self.playSound(self.stroke)
                 self.turnMade()
 
-            elif aiMove == (2,1):
+            elif aiMove == (1, 2):
                 self.symbolSet.append(self.gameField.create_image(250, 150, anchor=CENTER,
                                                                   image=self.bigPics[self.tokens[self.turnPlayer]]))
                 self.playBoard[1][2] = self.tokens[self.turnPlayer]
                 self.playSound(self.stroke)
                 self.turnMade()
 
-            elif aiMove == (2,2):
+            elif aiMove == (2, 2):
                 self.symbolSet.append(self.gameField.create_image(250, 250, anchor=CENTER,
                                                                   image=self.bigPics[self.tokens[self.turnPlayer]]))
                 self.playBoard[2][2] = self.tokens[self.turnPlayer]
                 self.playSound(self.stroke)
                 self.turnMade()
-
 
             # AI Wincheck
             if self.winCheck(self.playBoard):
@@ -295,7 +302,6 @@ class MainGame:
                     self._new()
                 else:
                     self._quit()
-
 
     def turnMade(self):
         if self.turnPlayer == 0:
@@ -311,11 +317,8 @@ class MainGame:
 
         return player
 
-
-
     def minimax(self, player, board):
 
-        print(board)
         emptyField = []
 
         # Checking for empty fields
@@ -332,8 +335,8 @@ class MainGame:
         elif self.winCheck(board) and self._nextplayer(player) == 0:
             move.score = -10
             return move
-        elif len(emptyField)== 0:
-            move.score= 0
+        elif len(emptyField) == 0:
+            move.score = 0
             return move
 
         moves = []
@@ -366,12 +369,9 @@ class MainGame:
 
         return moves[bestMove]
 
-
-
     # newGame Kindfenster Funktionen
     def _on_closing(self):
         pass
-
 
     def _radCallP1(self):
         if self.p1token.get() == 0:
@@ -432,10 +432,8 @@ class MainGame:
         gameMenu.add_command(label=" Neues Spiel ", command=self._new)
         gameMenu.add_command(label=" Spiel beenden", command=self._quit)
 
-
     # Kindfenster für ein neues Spiel
     def newGame(self):
-
 
         if self.tokenSelector is None:
             self.tokenSelector = tk.Toplevel()
@@ -456,7 +454,6 @@ class MainGame:
                                           variable=self.p1token, value=col, compound="right", command=self._radCallP1)
                 p1select.grid(column=col, row=1)
 
-
             labelP2 = tk.Label(self.tokenSelector, text=" Spieler 2 (Bot) ")
             labelP2.grid(column=0, row=2)
 
@@ -468,7 +465,7 @@ class MainGame:
                                           variable=self.p2token, value=col, compound="right", command=self._radCallP2)
                 p2select.grid(column=col, row=3)
 
-            tk.Button(self.tokenSelector, text= " Spiel beginnen ", command=self._start).grid(column=0, row=4)
+            tk.Button(self.tokenSelector, text=" Spiel beginnen ", command=self._start).grid(column=0, row=4)
 
 
 # Instanz MainGame wird erstellt und Spiel gestartet
