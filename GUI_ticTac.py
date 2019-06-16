@@ -3,6 +3,12 @@ from tkinter import messagebox as msg, CENTER
 from PIL import ImageTk, Image
 from random import choice
 import pygame
+import copy
+
+class Move:
+
+    index = []
+    score = 0
 
 
 class MainGame:
@@ -23,6 +29,7 @@ class MainGame:
     symbolSet = [[0, 0]]
     symbolPos = [[50, 50], [50, 150], [50, 250], [150, 50], [150, 150], [150, 250], [250, 50], [250, 150], [250, 250]]
     playBoard = [[" " for i in range(3)] for i in range(3)]
+    fc = 0
 
     # Sound Initialisierung
     pygame.mixer.init()
@@ -82,46 +89,42 @@ class MainGame:
         return True
 
     # Gewinnbedingen erfüllt?
-    def winCheck(self, playBoard):
+    def winCheck(self, board):
 
 
 
         # Reihe wird überprüft
-        for y in range(len(playBoard)):
-            if self.fieldsTheSame(y, 0, playBoard, 0, 1):
-                self.winMessage()
+        for y in range(len(board)):
+            if self.fieldsTheSame(y, 0, board, 0, 1):
+                return True
 
         # Spalte wird überprüft
-        for x in range(len(playBoard)):
-            if self.fieldsTheSame(0, x, playBoard, 1, 0):
-                self.winMessage()
+        for x in range(len(board)):
+            if self.fieldsTheSame(0, x, board, 1, 0):
+                return True
 
         # Check diagonal
-        if self.fieldsTheSame(0, 0, playBoard, 1, 1):
-            self.winMessage()
+        if self.fieldsTheSame(0, 0, board, 1, 1):
+            return True
 
-        if self.fieldsTheSame(2, 0, playBoard, -1, 1):
-            self.winMessage()
+        if self.fieldsTheSame(2, 0, board, -1, 1):
+            return True
 
-        if self.draw():
-            if msg.askyesno(" Unentschieden", "Keiner hat gewonnen!\n Noch eine Runde?"):
-                self._new()
-            else:
-                self._quit()
+        return False
 
     # Ist das Spiel unentschieden?
-    def draw(self):
-        for col in range(len(self.playBoard)):
-            for row in range(len(self.playBoard)):
+    def draw(self, board):
+        for col in range(len(board)):
+            for row in range(len(board)):
                 if self.playBoard[col][row] == " ":
                     return False
         return True
 
     def winMessage(self):
         self.turnMade()
-        spieler = "Spieler " + str(self.turnPlayer + 1)
+        player = "Spieler " + str(self.turnPlayer + 1)
         self.playSound(self.winSound)
-        if msg.askyesno(" GEWONNEN!", spieler + " hat das Spiel gewonnen!\n Noch eine Runde?"):
+        if msg.askyesno(" GEWONNEN!", player + " hat das Spiel gewonnen!\n Noch eine Runde?"):
             self._new()
         else:
             self._quit()
@@ -201,17 +204,169 @@ class MainGame:
         for i in range(len(self.symbolSet)):
             print(self.gameField.coords(self.symbolSet[i]))
 
-        for token in self.playBoard:
-            print(token)
 
-        # # WinCheck
-        self.winCheck(self.playBoard)
+
+        # # Player WinCheck
+        if self.winCheck(self.playBoard):
+            self.winMessage()
+        elif self.draw(self.playBoard):
+            if msg.askyesno(" Unentschieden", "Keiner hat gewonnen!\n Noch eine Runde?"):
+                self._new()
+            else:
+                self._quit()
+
+        # AI Turn
+        if self.turnPlayer == 1:
+            board = copy.deepcopy(self.playBoard)
+            player = 1
+            aiMove = self.minimax(player, board).index
+
+            # AÍ Drawphase
+            if aiMove == (0,0):
+                self.symbolSet.append(self.gameField.create_image(50, 50, anchor=CENTER,
+                                                                  image=self.bigPics[self.tokens[self.turnPlayer]]))
+                self.playBoard[0][0] = self.tokens[self.turnPlayer]
+                self.playSound(self.stroke)
+                self.turnMade()
+            elif aiMove == (1,0):
+                self.symbolSet.append(self.gameField.create_image(50, 150, anchor=CENTER,
+                                                                  image=self.bigPics[self.tokens[self.turnPlayer]]))
+                self.playBoard[1][0] = self.tokens[self.turnPlayer]
+                self.playSound(self.stroke)
+                self.turnMade()
+
+            elif aiMove == (2,0):
+                self.symbolSet.append(self.gameField.create_image(50, 250, anchor=CENTER,
+                                                                  image=self.bigPics[self.tokens[self.turnPlayer]]))
+                self.playBoard[2][0] = self.tokens[self.turnPlayer]
+                self.playSound(self.stroke)
+                self.turnMade()
+
+                # Kontrolle mittlere Spalte
+            elif aiMove == (0,1):
+                self.symbolSet.append(self.gameField.create_image(150, 50, anchor=CENTER,
+                                                                  image=self.bigPics[self.tokens[self.turnPlayer]]))
+                self.playBoard[0][1] = self.tokens[self.turnPlayer]
+                self.playSound(self.stroke)
+                self.turnMade()
+
+            elif aiMove == (1,1):
+                self.symbolSet.append(self.gameField.create_image(150, 150, anchor=CENTER,
+                                                                  image=self.bigPics[self.tokens[self.turnPlayer]]))
+                self.playBoard[1][1] = self.tokens[self.turnPlayer]
+                self.playSound(self.stroke)
+                self.turnMade()
+
+            elif aiMove == (1,2):
+                self.symbolSet.append(self.gameField.create_image(150, 250, anchor=CENTER,
+                                                                  image=self.bigPics[self.tokens[self.turnPlayer]]))
+                self.playBoard[2][1] = self.tokens[self.turnPlayer]
+                self.playSound(self.stroke)
+                self.turnMade()
+
+                # Kontrolle rechte Spalte
+            elif aiMove == (2,0):
+                self.symbolSet.append(self.gameField.create_image(250, 50, anchor=CENTER,
+                                                                  image=self.bigPics[self.tokens[self.turnPlayer]]))
+                self.playBoard[0][2] = self.tokens[self.turnPlayer]
+                self.playSound(self.stroke)
+                self.turnMade()
+
+            elif aiMove == (2,1):
+                self.symbolSet.append(self.gameField.create_image(250, 150, anchor=CENTER,
+                                                                  image=self.bigPics[self.tokens[self.turnPlayer]]))
+                self.playBoard[1][2] = self.tokens[self.turnPlayer]
+                self.playSound(self.stroke)
+                self.turnMade()
+
+            elif aiMove == (2,2):
+                self.symbolSet.append(self.gameField.create_image(250, 250, anchor=CENTER,
+                                                                  image=self.bigPics[self.tokens[self.turnPlayer]]))
+                self.playBoard[2][2] = self.tokens[self.turnPlayer]
+                self.playSound(self.stroke)
+                self.turnMade()
+
+
+            # AI Wincheck
+            if self.winCheck(self.playBoard):
+                self.winMessage()
+            elif self.draw(self.playBoard):
+                if msg.askyesno(" Unentschieden", "Keiner hat gewonnen!\n Noch eine Runde?"):
+                    self._new()
+                else:
+                    self._quit()
+
 
     def turnMade(self):
         if self.turnPlayer == 0:
             self.turnPlayer += 1
         else:
             self.turnPlayer = 0
+
+    def _nextplayer(self, player):
+        if player == 0:
+            player += 1
+        else:
+            player = 0
+
+        return player
+
+
+
+    def minimax(self, player, board):
+
+        print(board)
+        emptyField = []
+
+        # Checking for empty fields
+        for y in range(len(board)):
+            for x in range(len(board)):
+                if board[y][x] == " ":
+                    emptyField.append((y, x))
+
+        move = Move()
+        # Checking for terminal states
+        if self.winCheck(board) and self._nextplayer(player) == 1:
+            move.score = 10
+            return move
+        elif self.winCheck(board) and self._nextplayer(player) == 0:
+            move.score = -10
+            return move
+        elif len(emptyField)== 0:
+            move.score= 0
+            return move
+
+        moves = []
+
+        # plotting the next turn
+        for field in emptyField:
+            move = Move()
+            fieldNew = copy.deepcopy(board)
+            move.index = field
+            fieldNew[field[0]][field[1]] = player
+            result = self.minimax(self._nextplayer(player), fieldNew)
+            move.score = result.score
+            moves.append(move)
+
+        # Finding best Move by Score
+        bestMove = 0
+        if player == 1:
+            bestScore = -10000
+            for index in range(0, len(moves)):
+                if moves[index].score > bestScore:
+                    bestScore = moves[index].score
+                    bestMove = index
+
+        if player == 0:
+            bestScore = 10000
+            for index in range(0, len(moves)):
+                if moves[index].score < bestScore:
+                    bestScore = moves[index].score
+                    bestMove = index
+
+        return moves[bestMove]
+
+
 
     # newGame Kindfenster Funktionen
     def _on_closing(self):
