@@ -160,24 +160,24 @@ class MainGame:
         if (self.turnPlayer == 0 and event.x < 100 and event.y < 100 and not self.tokenExists(self.symbolPos[0])) \
                 or (self.turnPlayer == 1 and self.aiMove == (0, 0)):
             self.symbolSet.append(
-                self.gameField.create_image(50, 50, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
-            self.playBoard[0][0] = self.tokens[self.turnPlayer]
+                self.gameField.create_image(50, 50, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer][1]]))
+            self.playBoard[0][0] = self.tokens[self.turnPlayer][0]
             self.playSound(self.stroke)
             self.turnMade()
 
         elif (self.turnPlayer == 0 and event.x < 100 < event.y < 200 and not self.tokenExists(self.symbolPos[1])) \
                 or (self.turnPlayer == 1 and self.aiMove == (1, 0)):
             self.symbolSet.append(
-                self.gameField.create_image(50, 150, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
-            self.playBoard[1][0] = self.tokens[self.turnPlayer]
+                self.gameField.create_image(50, 150, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer][1]]))
+            self.playBoard[1][0] = self.tokens[self.turnPlayer][0]
             self.playSound(self.stroke)
             self.turnMade()
 
         elif (self.turnPlayer == 0 and event.x < 100 and event.y > 200 and not self.tokenExists(self.symbolPos[2])) \
                 or (self.turnPlayer == 1 and self.aiMove == (2, 0)):
             self.symbolSet.append(
-                self.gameField.create_image(50, 250, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
-            self.playBoard[2][0] = self.tokens[self.turnPlayer]
+                self.gameField.create_image(50, 250, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer][1]]))
+            self.playBoard[2][0] = self.tokens[self.turnPlayer][0]
             self.playSound(self.stroke)
             self.turnMade()
 
@@ -185,24 +185,24 @@ class MainGame:
         elif (self.turnPlayer == 0 and event.y < 100 < event.x < 200 and not self.tokenExists(self.symbolPos[3])) \
                 or (self.turnPlayer == 1 and self.aiMove == (0, 1)):
             self.symbolSet.append(
-                self.gameField.create_image(150, 50, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
-            self.playBoard[0][1] = self.tokens[self.turnPlayer]
+                self.gameField.create_image(150, 50, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer][1]]))
+            self.playBoard[0][1] = self.tokens[self.turnPlayer][0]
             self.playSound(self.stroke)
             self.turnMade()
 
         elif (self.turnPlayer == 0 and 100 < event.x < 200 and 100 < event.y < 200 and not self.tokenExists(self.symbolPos[4])) \
                 or (self.turnPlayer == 1 and self.aiMove == (1, 1)):
             self.symbolSet.append(
-                self.gameField.create_image(150, 150, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
-            self.playBoard[1][1] = self.tokens[self.turnPlayer]
+                self.gameField.create_image(150, 150, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer][1]]))
+            self.playBoard[1][1] = self.tokens[self.turnPlayer][0]
             self.playSound(self.stroke)
             self.turnMade()
 
         elif (self.turnPlayer == 0 and event.x > 100 and event.x < 200 < event.y and not self.tokenExists(self.symbolPos[5])) \
                 or (self.turnPlayer == 1 and self.aiMove == (2, 1)):
             self.symbolSet.append(
-                self.gameField.create_image(150, 250, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
-            self.playBoard[2][1] = self.tokens[self.turnPlayer]
+                self.gameField.create_image(150, 250, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer][1]]))
+            self.playBoard[2][1] = self.tokens[self.turnPlayer][0]
             self.playSound(self.stroke)
             self.turnMade()
 
@@ -210,50 +210,53 @@ class MainGame:
         elif (self.turnPlayer == 0 and event.x > 200 and event.y < 100 and not self.tokenExists(self.symbolPos[6])) \
                 or (self.turnPlayer == 1 and self.aiMove == (0, 2)):
             self.symbolSet.append(
-                self.gameField.create_image(250, 50, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
-            self.playBoard[0][2] = self.tokens[self.turnPlayer]
+                self.gameField.create_image(250, 50, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer][1]]))
+            self.playBoard[0][2] = self.tokens[self.turnPlayer][0]
             self.playSound(self.stroke)
             self.turnMade()
 
         elif (self.turnPlayer == 0 and event.x > 200 > event.y and event.y > 100 and not self.tokenExists(self.symbolPos[7])) \
                 or (self.turnPlayer == 1 and self.aiMove == (1, 2)):
             self.symbolSet.append(
-                self.gameField.create_image(250, 150, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
-            self.playBoard[1][2] = self.tokens[self.turnPlayer]
+                self.gameField.create_image(250, 150, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer][1]]))
+            self.playBoard[1][2] = self.tokens[self.turnPlayer][0]
             self.playSound(self.stroke)
             self.turnMade()
 
         elif (self.turnPlayer == 0 and event.x > 200 and event.y > 200 and not self.tokenExists(self.symbolPos[8])) \
                 or (self.turnPlayer == 1 and self.aiMove == (2, 2)):
             self.symbolSet.append(
-                self.gameField.create_image(250, 250, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer]]))
-            self.playBoard[2][2] = self.tokens[self.turnPlayer]
+                self.gameField.create_image(250, 250, anchor=CENTER, image=self.bigPics[self.tokens[self.turnPlayer][1]]))
+            self.playBoard[2][2] = self.tokens[self.turnPlayer][0]
             self.playSound(self.stroke)
             self.turnMade()
 
     # Token wird auf Spielfeld gesetzt und Zug weitergegeben
-    def makeMove(self, event):
-
-
-
+    def  player(self, event):
 
         #### Player turn
-        self.drawToken(event)
+        if self.turnPlayer == 0:
 
-        # Debug Printout Spielarray
-        for i in range(len(self.symbolSet)):
-            print(self.gameField.coords(self.symbolSet[i]))
+            self.drawToken(event)
 
-        for token in self.playBoard:
-            print(token)
-        print(self.turnPlayer)
+            # Debug Printout Spielarray
+            for i in range(len(self.symbolSet)):
+                print(self.gameField.coords(self.symbolSet[i]))
+
+            for token in self.playBoard:
+                print(token)
+            print(self.turnPlayer)
 
 
-        print("clicked at", event.x, event.y)
+            print("clicked at", event.x, event.y)
 
-        # # Player WinCheck
-        self.winCheck()
+            # # Player WinCheck
+            self.winCheck()
 
+        self.kiMove(event)
+
+
+    def kiMove(self, event):
         #### AI Turn
         if self.turnPlayer == 1:
             msg.showinfo(" KI Zug! ", " Die KI macht ihren Zug! ")
@@ -266,6 +269,7 @@ class MainGame:
             # # AI Wincheck
             self.winCheck()
 
+    # Setting up next Turn
     def turnMade(self):
         if self.turnPlayer == 0:
             self.turnPlayer += 1
@@ -273,10 +277,10 @@ class MainGame:
             self.turnPlayer = 0
 
     def _nextplayer(self, player):
-        if player == 0:
-            player += 1
-        else:
+        if player == 1:
             player = 0
+        else:
+            player = 1
 
         return player
 
@@ -322,7 +326,7 @@ class MainGame:
             move = Move()
             fieldNew = copy.deepcopy(board)
             move.index = field
-            fieldNew[field[0]][field[1]] = player
+            fieldNew[field[0]][field[1]] = self.tokens[player][0]
             result = self.minimax(self._nextplayer(player), fieldNew)
             move.score = result.score
             moves.append(move)
@@ -361,11 +365,23 @@ class MainGame:
         else:
             self.p1token.set(0)
 
+    # KI starts the Game
+    def _kiStart(self):
+        self.turnPlayer = 1
+        self._start()
+        self.kiMove(event=1)
+
     def _start(self):
         self.tokenSelector.destroy()
         self.startPlay.grid_forget()
-        self.tokens.append(self.p1token.get())
-        self.tokens.append(self.p2token.get())
+        if self.p1token.get() == 0:
+            self.tokens.append(("X", 0))
+            self.tokens.append(("O", 1))
+            print(self.tokens)
+
+        else:
+            self.tokens.append(("O", 1))
+            self.tokens.append(("X", 0))
 
     # Init Hauptfenster
     def __init__(self):
@@ -396,7 +412,7 @@ class MainGame:
         self.gameField.create_line(100, 0, 100, 300, width=3)
         self.gameField.create_line(200, 0, 200, 300, width=3)
 
-        self.gameField.bind("<Button-1>", self.makeMove)
+        self.gameField.bind("<Button-1>", self.player)
 
     def mainMenu(self):
         menuBar = tk.Menu(self.root)
@@ -441,7 +457,8 @@ class MainGame:
                                           variable=self.p2token, value=col, compound="right", command=self._radCallP2)
                 p2select.grid(column=col, row=3)
 
-            tk.Button(self.tokenSelector, text=" Spiel beginnen ", command=self._start).grid(column=0, row=4)
+            tk.Button(self.tokenSelector, text=" Ich fange an ", command=self._start).grid(column=0, row=4)
+            tk.Button(self.tokenSelector, text=" Die KI fängt an ", command=self._kiStart).grid(column=1, row=4)
 
 
 # Instanz MainGame wird erstellt und Spiel gestartet
