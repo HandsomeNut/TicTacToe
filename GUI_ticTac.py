@@ -32,7 +32,7 @@ class MainGame:
     fc = 0
     aiMove = ()
 
-    maxDepth = 9
+    maxDepth = 1000
 
     # Sound Initialisierung
     pygame.mixer.init()
@@ -260,7 +260,7 @@ class MainGame:
         #### AI Turn
         if self.turnPlayer == 1:
             msg.showinfo(" KI Zug! ", " Die KI macht ihren Zug! ")
-            self.curDepth = 0
+            self.curDepth = -1
             player = 1
             self.aiMove = self.minimax(player, self.playBoard).index
             print (self.aiMove)
@@ -288,16 +288,17 @@ class MainGame:
     def minimax(self, player, board):
 
         # Grenze für die Rekursionstiefe
-        # self.curDepth += 1
-        # if self.curDepth > self.maxDepth:
-        #     if player == 0:
-        #         move = Move()
-        #         move.score = -10000
-        #         return move
-        #     elif player == 1:
-        #         move = Move()
-        #         move.score = 10000
-        #         return move
+        self.curDepth += 1
+        print(self.curDepth)
+        if self.curDepth > self.maxDepth:
+            if player == 0:
+                move = Move()
+                move.score = -10000
+                return move
+            elif player == 1:
+                move = Move()
+                move.score = 10000
+                return move
 
         emptyField = []
 
