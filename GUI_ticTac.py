@@ -1,7 +1,7 @@
 import copy
 import tkinter as tk
 from random import choice
-from tkinter import messagebox as msg, CENTER
+from tkinter import messagebox as msg, CENTER, HORIZONTAL
 
 import pygame
 from PIL import ImageTk, Image
@@ -16,7 +16,7 @@ class MainGame:
     # # # Initialisierung der Klassenvariablen
 
     # # GUI-Variablen
-    path = ["Data/Tac.png", "Data/Tic.png"]
+    path = ["Data/Tac.png", "Data/Tic.png", "Data/bot.png", "Data/man.png"]
     stroke = ["Data/stroke1.wav", "Data/stroke2.wav", "Data/stroke3.wav"]
     winSound = ["Data/win.wav"]
     bigPics = []
@@ -32,7 +32,7 @@ class MainGame:
     fc = 0
     aiMove = ()
 
-    maxDepth = 1000
+    maxDepth = 28000
 
     # Sound Initialisierung
     pygame.mixer.init()
@@ -50,10 +50,10 @@ class MainGame:
             self.bigPics.append(fileData)
 
         # Kleine Bilder
-        for fig in range(2):
+        for fig in range(4):
             fileData = Image.open(self.path[fig])
             # Anpassen der Bildgröße auf 95x95
-            fileData = fileData.resize((25, 25), Image.ANTIALIAS)
+            fileData = fileData.resize((35, 35), Image.ANTIALIAS)
             # Umwandeln des Bildes in anzeigefähiges PhotoImage
             fileData = ImageTk.PhotoImage(fileData)
 
@@ -134,12 +134,18 @@ class MainGame:
 
     def winMessage(self):
         self.turnMade()
-        player = "Spieler " + str(self.turnPlayer + 1)
         self.playSound(self.winSound)
-        if msg.askyesno(" GEWONNEN!", player + " hat das Spiel gewonnen!\n Noch eine Runde?"):
-            self._new()
+
+        if self.turnPlayer == 0:
+            if msg.askyesno(" GEWONNEN! :)", "Du hast hat das Spiel gewonnen!\n Noch eine Runde?"):
+                self._new()
+            else:
+                self._quit()
         else:
-            self._quit()
+            if msg.askyesno(" Leider Verloren!!! ", "Leider hast du das Spiel verloren!\n Noch eine Runde?"):
+                self._new()
+            else:
+                self._quit()
 
     # Existiert der Token auf dem gewählten Feld bereits
     def tokenExists(self, bildCoords):
@@ -391,6 +397,7 @@ class MainGame:
         else:
             self.tokens.append(("O", 1))
             self.tokens.append(("X", 0))
+        self.maxDepth = self.difSet.get()
 
     # Init Hauptfenster
     def __init__(self):
@@ -442,32 +449,45 @@ class MainGame:
             self.tokenSelector.resizable(False, False)
             self.tokenSelector.protocol("WM_DELETE_WINDOW", self._on_closing)
 
+            # Frame für Radiobuttons und Labels
+            selectorFrame = tk.LabelFrame(self.tokenSelector, text=" Einstellungen ", borderwidth=0)
+            selectorFrame.grid(column=0, row=0)
+
             nameToken = ["Tic", "Tac"]
 
-            labelP1 = tk.Label(self.tokenSelector, text=" Spieler 1 ")
+            labelP1 = tk.Label(selectorFrame, text=" Spieler 1 ")
             labelP1.grid(column=0, row=0)
 
             # Spielsteinwahl Spieler 1
             self.p1token = tk.IntVar()
             self.p1token.set(0)
             for col in range(2):
-                p1select = tk.Radiobutton(self.tokenSelector, text=nameToken[col], image=self.smallPics[col],
+                p1select = tk.Radiobutton(selectorFrame, text=nameToken[col], image=self.smallPics[col],
                                           variable=self.p1token, value=col, compound="right", command=self._radCallP1)
                 p1select.grid(column=col, row=1)
 
-            labelP2 = tk.Label(self.tokenSelector, text=" Spieler 2 (Bot) ")
+            labelP2 = tk.Label(selectorFrame, text=" Spieler 2 (Bot) ")
             labelP2.grid(column=0, row=2)
 
             # Spielsteinwahl Spieler 2
             self.p2token = tk.IntVar()
             self.p2token.set(1)
             for col in range(2):
-                p2select = tk.Radiobutton(self.tokenSelector, text=nameToken[col], image=self.smallPics[col],
+                p2select = tk.Radiobutton(selectorFrame, text=nameToken[col], image=self.smallPics[col],
                                           variable=self.p2token, value=col, compound="right", command=self._radCallP2)
                 p2select.grid(column=col, row=3)
 
-            tk.Button(self.tokenSelector, text=" Ich fange an ", command=self._start).grid(column=0, row=4)
-            tk.Button(self.tokenSelector, text=" Die KI fängt an ", command=self._kiStart).grid(column=1, row=4)
+            # KI Intelligenz Slider
+            self.difSet = tk.IntVar()
+            self.difSet.set(1)
+            difficulty = tk.Scale(self.tokenSelector, label=" Schwierigkeitsgrad ", variable=self.difSet, from_=1, to=30000, orient=HORIZONTAL,
+                                       length=150, resolution=100, tickinterval=30000, showvalue = 0)
+            difficulty.grid(column=0, row=2, padx=8, pady=8)
+
+            tk.Button(self.tokenSelector, text=" Ich fange an ", image=self.smallPics[3], compound="left",
+                      width=150, command=self._start).grid(column=0, row=4, padx=4, pady=4)
+            tk.Button(self.tokenSelector, text=" Die KI fängt an " , image=self.smallPics[2], compound="left",
+                      width=150, command=self._kiStart).grid(column=0, row=5, padx=4, pady=4)
 
 
 # Instanz MainGame wird erstellt und Spiel gestartet
