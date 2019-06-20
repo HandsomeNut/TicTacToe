@@ -1,10 +1,11 @@
 import copy
 import tkinter as tk
 from random import choice
-from tkinter import messagebox as msg, CENTER, HORIZONTAL
+from tkinter import messagebox as msg, CENTER, HORIZONTAL, ttk
 
 import pygame
 from PIL import ImageTk, Image
+from threading import Thread
 
 
 class Move:
@@ -32,10 +33,32 @@ class MainGame:
     fc = 0
     aiMove = ()
 
-    maxDepth = 28000
+    curDepth = -1
+    maxDepth = 30000
 
     # Sound Initialisierung
     pygame.mixer.init()
+
+    def startMini(self):
+        self.run_load = Thread(target=self.preMinimax)
+        self.run_load.setDaemon(True)
+        self.run_load.start()
+        print(self.run_load)
+
+    def preMinimax(self, player=1, board=[[" " for i in range(3)] for i in range(3)]):
+        self.tokens = [("X", 0), ("O", 1)]
+        self.minimax(player,board)
+
+    def _progress(self, curValue):
+        self.load["value"]=curValue
+
+    def gameLoad(self):
+        while self.curDepth < self.maxDepth + 15:
+            curValue = self.curDepth
+            self.load.after(10, self._progress(curValue))
+            self.load.update()
+        self.load.grid_forget()
+        self.loading.grid_forget()
 
     # Bilder werden aus Data Verzeichnis importiert
     def pictures(self):
@@ -64,6 +87,8 @@ class MainGame:
         self.gameField.grid_forget()
         self.canvasFrame.grid_forget()
         self.createGameField()
+        self.load.grid_forget()
+        self.loading.grid_forget()
         self.symbolSet = [[0, 0]]
         self.playBoard = [[" " for i in range(3)] for i in range(3)]
         self.tokenSelector = None
@@ -409,6 +434,8 @@ class MainGame:
         self.pictures()
         self.createGameField()
         self.mainMenu()
+        self.startMini()
+        self.gameLoad()
 
     # Hauptfenster
     def createGameField(self):
@@ -421,6 +448,13 @@ class MainGame:
         # Button für zum Spielbeginn erstellen
         self.startPlay = tk.Button(self.root, width=36, height=18, text=" SPIELEN ", command=self.newGame)
         self.startPlay.grid(column=0, row=0)
+
+        # LoadingBar
+        self.load = ttk.Progressbar(self.root, length=240, mode="determinate")
+        self.load.grid(column=0, row=0)
+        self.load["maximum"] = 30000
+        self.loading = tk.Label(self.root, text=" Lade Spiel... ")
+        self.loading.grid(column=0, row=1)
 
         # Spielfeld zeichnen
         self.gameField.create_line(0, 100, 300, 100, width=3)
@@ -492,5 +526,7 @@ class MainGame:
 
 # Instanz MainGame wird erstellt und Spiel gestartet
 game = MainGame()
+
+run_load = Thread(target=game.preMinimax)
 
 game.root.mainloop()
