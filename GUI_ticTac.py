@@ -1,11 +1,11 @@
 import copy
 import tkinter as tk
 from random import choice
+from threading import Thread
 from tkinter import messagebox as msg, CENTER, HORIZONTAL, ttk
 
 import pygame
 from PIL import ImageTk, Image
-from threading import Thread
 
 
 class Move:
@@ -39,26 +39,18 @@ class MainGame:
     # Sound Initialisierung
     pygame.mixer.init()
 
-    def startMini(self):
-        self.run_load = Thread(target=self.preMinimax)
-        self.run_load.setDaemon(True)
-        self.run_load.start()
-        print(self.run_load)
-
-    def preMinimax(self, player=1, board=[[" " for i in range(3)] for i in range(3)]):
-        self.tokens = [("X", 0), ("O", 1)]
-        self.minimax(player,board)
-
-    def _progress(self, curValue):
-        self.load["value"]=curValue
-
-    def gameLoad(self):
-        while self.curDepth < self.maxDepth + 15:
-            curValue = self.curDepth
-            self.load.after(10, self._progress(curValue))
-            self.load.update()
-        self.load.grid_forget()
-        self.loading.grid_forget()
+# Init Game
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title(" Tic Tac Toe O X ")
+        self.root.resizable(False, False)
+        img = tk.PhotoImage(file="Data/TicTacToe.png")
+        self.root.tk.call("wm", "iconphoto", self.root._w, img)
+        self.pictures()
+        self.createGameField()
+        self.mainMenu()
+        self.startMini()
+        self.gameLoad()
 
     # Bilder werden aus Data Verzeichnis importiert
     def pictures(self):
@@ -82,27 +74,8 @@ class MainGame:
 
             self.smallPics.append(fileData)
 
-    # Neues Spiel beginnen
-    def _new(self):
-        self.gameField.grid_forget()
-        self.canvasFrame.grid_forget()
-        self.createGameField()
-        self.load.grid_forget()
-        self.loading.grid_forget()
-        self.symbolSet = [[0, 0]]
-        self.playBoard = [[" " for i in range(3)] for i in range(3)]
-        self.tokenSelector = None
-        self.tokens = []
-        self.turnPlayer = 0
-        self.newGame()
 
-    # Spiel beenden
-    def _quit(self):
-        self.root.quit()
-        self.root.destroy()
-        exit()
-
-    # # Spiellogik
+# # Spiellogik
 
     # Sind drei Steine in einer Reihe?
     def fieldsTheSame(self, startY, startX, playBoard, dx, dy):
@@ -389,16 +362,20 @@ class MainGame:
 
         return moves[bestMove]
 
-    # newGame Kindfenster Funktionen
+# game setup child window functions
+
+    # prevents gamesetup win from closing
     def _on_closing(self):
         pass
 
+    # Player 1 token selection Radiobuttons
     def _radCallP1(self):
         if self.p1token.get() == 0:
             self.p2token.set(1)
         else:
             self.p2token.set(0)
 
+    # Player 2 token selection Radiobuttons
     def _radCallP2(self):
         if self.p2token.get() == 0:
             self.p1token.set(1)
@@ -408,10 +385,11 @@ class MainGame:
     # KI starts the Game
     def _kiStart(self):
         self.turnPlayer = 1
-        self._start()
+        self._tokenStart()
         self.kiMove(event=1)
 
-    def _start(self):
+    # Setting up the tokens for game start
+    def _tokenStart(self):
         self.tokenSelector.destroy()
         self.startPlay.grid_forget()
         if self.p1token.get() == 0:
@@ -424,20 +402,57 @@ class MainGame:
             self.tokens.append(("X", 0))
         self.maxDepth = self.difSet.get()
 
-    # Init Hauptfenster
-    def __init__(self):
-        self.root = tk.Tk()
-        self.root.title(" Tic Tac Toe O X ")
-        self.root.resizable(False, False)
-        img = tk.PhotoImage(file="Data/TicTacToe.png")
-        self.root.tk.call("wm", "iconphoto", self.root._w, img)
-        self.pictures()
+    # Start a new game
+    def _new(self):
+        self.gameField.grid_forget()
+        self.canvasFrame.grid_forget()
         self.createGameField()
-        self.mainMenu()
-        self.startMini()
-        self.gameLoad()
+        self.load.grid_forget()
+        self.loading.grid_forget()
+        self.symbolSet = [[0, 0]]
+        self.playBoard = [[" " for i in range(3)] for i in range(3)]
+        self.tokenSelector = None
+        self.tokens = []
+        self.turnPlayer = 0
+        self.setupGame()
 
-    # Hauptfenster
+    # Quit game, used in gameMenu and winMessages
+    def _quit(self):
+        self.root.quit()
+        self.root.destroy()
+        exit()
+
+
+# Minimax Pre-Load
+
+    # setting up initMinimax as new Thread
+    def startMini(self):
+        self.run_load = Thread(target=self.initMinimax)
+        self.run_load.setDaemon(True)
+        self.run_load.start()
+        print(self.run_load)
+
+    # Starting Minimax during Init
+    def initMinimax(self, player=1, board=[[" " for i in range(3)] for i in range(3)]):
+        self.tokens = [("X", 0), ("O", 1)]
+        self.minimax(player, board)
+
+    # Updating Loading bar value
+    def _progress(self, curValue):
+        self.load["value"] = curValue
+
+    # Updating Progressbar according to initMinimax
+    def gameLoad(self):
+        while self.curDepth < self.maxDepth + 15:
+            curValue = self.curDepth
+            self.load.after(10, self._progress(curValue))
+            self.load.update()
+        self.load.grid_forget()
+        self.loading.grid_forget()
+
+# Game window creation
+
+    # Main gaming window
     def createGameField(self):
         # Erstellen des Canvas und des Frames
         self.canvasFrame = tk.LabelFrame(self.root, text=" Spielfeld ")
@@ -446,7 +461,7 @@ class MainGame:
         self.gameField.grid(column=0, row=0)
 
         # Button für zum Spielbeginn erstellen
-        self.startPlay = tk.Button(self.root, width=36, height=18, text=" SPIELEN ", command=self.newGame)
+        self.startPlay = tk.Button(self.root, width=36, height=18, text=" SPIELEN ", command=self.setupGame)
         self.startPlay.grid(column=0, row=0)
 
         # LoadingBar
@@ -475,7 +490,7 @@ class MainGame:
         gameMenu.add_command(label=" Spiel beenden", command=self._quit)
 
     # Kindfenster für ein neues Spiel
-    def newGame(self):
+    def setupGame(self):
 
         if self.tokenSelector is None:
             self.tokenSelector = tk.Toplevel()
@@ -514,19 +529,21 @@ class MainGame:
             # KI Intelligenz Slider
             self.difSet = tk.IntVar()
             self.difSet.set(1)
-            difficulty = tk.Scale(self.tokenSelector, label=" Schwierigkeitsgrad ", variable=self.difSet, from_=1, to=30000, orient=HORIZONTAL,
-                                       length=150, resolution=100, tickinterval=30000, showvalue = 0)
+            difficulty = tk.Scale(self.tokenSelector, label=" Schwierigkeitsgrad ", variable=self.difSet, from_=1,
+                                  to=30000, orient=HORIZONTAL,
+                                  length=150, resolution=100, tickinterval=30000, showvalue=0)
             difficulty.grid(column=0, row=2, padx=8, pady=8)
 
             tk.Button(self.tokenSelector, text=" Ich fange an ", image=self.smallPics[3], compound="left",
-                      width=150, command=self._start).grid(column=0, row=4, padx=4, pady=4)
-            tk.Button(self.tokenSelector, text=" Die KI fängt an " , image=self.smallPics[2], compound="left",
+                      width=150, command=self._tokenStart).grid(column=0, row=4, padx=4, pady=4)
+            tk.Button(self.tokenSelector, text=" Die KI fängt an ", image=self.smallPics[2], compound="left",
                       width=150, command=self._kiStart).grid(column=0, row=5, padx=4, pady=4)
 
 
 # Instanz MainGame wird erstellt und Spiel gestartet
 game = MainGame()
 
-run_load = Thread(target=game.preMinimax)
+# New thread for initMinimax
+run_load = Thread(target=game.initMinimax)
 
 game.root.mainloop()
