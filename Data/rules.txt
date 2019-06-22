@@ -1,0 +1,3 @@
+TicTacToe Regeln
+
+Tic Tac Toe spielt man auf einem 3x3 Felder großen Feld. Es spielen zwei Spieler gegen einander, wobei sie abwechselnd ein leeres Feld mit ihrem Zeichen markieren. Der eine Spieler benutzt Kreuze als Markierung und der andere Spieler benutzt Kreise. Der erste Spieler, der es schafft, drei seiner Symbole ohne Unterbrechung in einer Reihe zu haben, gewinnt das Spiel augenblicklich. Als Reihe gelten waagerechte, senkrechte oder diagonale Reihen.

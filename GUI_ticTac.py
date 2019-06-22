@@ -2,29 +2,32 @@ import copy
 import tkinter as tk
 from random import choice
 from threading import Thread
-from tkinter import messagebox as msg, CENTER, HORIZONTAL, ttk
+from tkinter import messagebox as msg, ttk, CENTER, HORIZONTAL, INSERT, WORD, DISABLED
 
 import pygame
 from PIL import ImageTk, Image
 
-
+# Move class to store index and score for minimax
 class Move:
     index = []
     score = 0
 
 
 class MainGame:
-    # # # Initialisierung der Klassenvariablen
+# # # Initialising important variables
 
-    # # GUI-Variablen
+    # # GUI-variables
     path = ["Data/Tac.png", "Data/Tic.png", "Data/bot.png", "Data/man.png"]
     stroke = ["Data/stroke1.wav", "Data/stroke2.wav", "Data/stroke3.wav"]
     winSound = ["Data/win.wav"]
     bigPics = []
     smallPics = []
-    tokenSelector = None
 
-    # # Spiellogikvariablen
+    # Child window control variables
+    gameSetup = None
+    gameRules = None
+
+    # # Game logic variables
     tokens = []  # Pos 0 Player 1 Token; Pos 1 Player 2 Token
     turnPlayer = 0  # 0 => Spieler 1 am Zug, 1 => Spieler 2 am Zug
     symbolSet = [[0, 0]]
@@ -75,7 +78,7 @@ class MainGame:
             self.smallPics.append(fileData)
 
 
-# # Spiellogik
+# # Game logic
 
     # Sind drei Steine in einer Reihe?
     def fieldsTheSame(self, startY, startX, playBoard, dx, dy):
@@ -135,12 +138,12 @@ class MainGame:
         self.playSound(self.winSound)
 
         if self.turnPlayer == 0:
-            if msg.askyesno(" GEWONNEN! :)", "Du hast hat das Spiel gewonnen!\n Noch eine Runde?"):
+            if msg.askyesno(" GEWONNEN! :)", "Du hast hat das Spiel gewonnen!\nNoch eine Runde?"):
                 self._new()
             else:
                 self._quit()
         else:
-            if msg.askyesno(" Leider Verloren!!! ", "Leider hast du das Spiel verloren!\n Noch eine Runde?"):
+            if msg.askyesno(" Leider Verloren!!! ", "Leider hast du das Spiel verloren!\nNoch eine Runde?"):
                 self._new()
             else:
                 self._quit()
@@ -362,45 +365,6 @@ class MainGame:
 
         return moves[bestMove]
 
-# game setup child window functions
-
-    # prevents gamesetup win from closing
-    def _on_closing(self):
-        pass
-
-    # Player 1 token selection Radiobuttons
-    def _radCallP1(self):
-        if self.p1token.get() == 0:
-            self.p2token.set(1)
-        else:
-            self.p2token.set(0)
-
-    # Player 2 token selection Radiobuttons
-    def _radCallP2(self):
-        if self.p2token.get() == 0:
-            self.p1token.set(1)
-        else:
-            self.p1token.set(0)
-
-    # KI starts the Game
-    def _kiStart(self):
-        self.turnPlayer = 1
-        self._tokenStart()
-        self.kiMove(event=1)
-
-    # Setting up the tokens for game start
-    def _tokenStart(self):
-        self.tokenSelector.destroy()
-        self.startPlay.grid_forget()
-        if self.p1token.get() == 0:
-            self.tokens.append(("X", 0))
-            self.tokens.append(("O", 1))
-            print(self.tokens)
-
-        else:
-            self.tokens.append(("O", 1))
-            self.tokens.append(("X", 0))
-        self.maxDepth = self.difSet.get()
 
     # Start a new game
     def _new(self):
@@ -411,16 +375,19 @@ class MainGame:
         self.loading.grid_forget()
         self.symbolSet = [[0, 0]]
         self.playBoard = [[" " for i in range(3)] for i in range(3)]
-        self.tokenSelector = None
+        self.gameSetup = None
         self.tokens = []
         self.turnPlayer = 0
-        self.setupGame()
+        self.setupWin()
 
     # Quit game, used in gameMenu and winMessages
     def _quit(self):
         self.root.quit()
         self.root.destroy()
         exit()
+
+    def _about(self):
+        msg.showinfo(" Über TicTacToe ", " Version: 1.0.0 190622 \nCreat0r: MadocMcGee")
 
 
 # Minimax Pre-Load
@@ -461,7 +428,7 @@ class MainGame:
         self.gameField.grid(column=0, row=0)
 
         # Button für zum Spielbeginn erstellen
-        self.startPlay = tk.Button(self.root, width=36, height=18, text=" SPIELEN ", command=self.setupGame)
+        self.startPlay = tk.Button(self.root, width=36, height=18, text=" SPIELEN ", command=self.setupWin)
         self.startPlay.grid(column=0, row=0)
 
         # LoadingBar
@@ -484,22 +451,69 @@ class MainGame:
         self.root.config(menu=menuBar)
 
         gameMenu = tk.Menu(menuBar, tearoff=0)
+        helpMenu = tk.Menu(menuBar, tearoff=0)
 
         menuBar.add_cascade(label="Spiel", menu=gameMenu)
         gameMenu.add_command(label=" Neues Spiel ", command=self._new)
         gameMenu.add_command(label=" Spiel beenden", command=self._quit)
 
-    # Kindfenster für ein neues Spiel
-    def setupGame(self):
+        menuBar.add_cascade(label="Hilfe", menu=helpMenu)
+        helpMenu.add_command(label=" Spielregel ", command=self.rulesWin)
+        helpMenu.add_command(label=" Über ", command=self._about)
 
-        if self.tokenSelector is None:
-            self.tokenSelector = tk.Toplevel()
-            self.tokenSelector.title(' Neues Spiel ')
-            self.tokenSelector.resizable(False, False)
-            self.tokenSelector.protocol("WM_DELETE_WINDOW", self._on_closing)
 
-            # Frame für Radiobuttons und Labels
-            selectorFrame = tk.LabelFrame(self.tokenSelector, text=" Einstellungen ", borderwidth=0)
+# game setup child window functions
+
+    # prevents gamesetup win from closing
+    def _on_closing(self):
+        pass
+
+    # Player 1 token selection Radiobuttons
+    def _radCallP1(self):
+        if self.p1token.get() == 0:
+            self.p2token.set(1)
+        else:
+            self.p2token.set(0)
+
+    # Player 2 token selection Radiobuttons
+    def _radCallP2(self):
+        if self.p2token.get() == 0:
+            self.p1token.set(1)
+        else:
+            self.p1token.set(0)
+
+    # KI starts the Game
+    def _kiStart(self):
+        self.turnPlayer = 1
+        self._tokenStart()
+        self.kiMove(event=1)
+
+    # Setting up the tokens for game start
+    def _tokenStart(self):
+        self.gameSetup.destroy()
+        self.startPlay.grid_forget()
+        if self.p1token.get() == 0:
+            self.tokens.append(("X", 0))
+            self.tokens.append(("O", 1))
+            print(self.tokens)
+
+        else:
+            self.tokens.append(("O", 1))
+            self.tokens.append(("X", 0))
+        self.maxDepth = self.difSet.get()
+
+
+    # Game Setup Child window
+    def setupWin(self):
+
+        if self.gameSetup is None:
+            self.gameSetup = tk.Toplevel()
+            self.gameSetup.title(' Neues Spiel ')
+            self.gameSetup.resizable(False, False)
+            self.gameSetup.protocol("WM_DELETE_WINDOW", self._on_closing)
+
+            # Frame for Player token selection
+            selectorFrame = tk.LabelFrame(self.gameSetup, text=" Einstellungen ", borderwidth=0)
             selectorFrame.grid(column=0, row=0)
 
             nameToken = ["Tic", "Tac"]
@@ -507,7 +521,7 @@ class MainGame:
             labelP1 = tk.Label(selectorFrame, text=" Spieler 1 ")
             labelP1.grid(column=0, row=0)
 
-            # Spielsteinwahl Spieler 1
+            # Token selection for Player 1
             self.p1token = tk.IntVar()
             self.p1token.set(0)
             for col in range(2):
@@ -518,7 +532,7 @@ class MainGame:
             labelP2 = tk.Label(selectorFrame, text=" Spieler 2 (Bot) ")
             labelP2.grid(column=0, row=2)
 
-            # Spielsteinwahl Spieler 2
+            # Token selection Player 2
             self.p2token = tk.IntVar()
             self.p2token.set(1)
             for col in range(2):
@@ -526,19 +540,41 @@ class MainGame:
                                           variable=self.p2token, value=col, compound="right", command=self._radCallP2)
                 p2select.grid(column=col, row=3)
 
-            # KI Intelligenz Slider
+            # AI difficulty slider
             self.difSet = tk.IntVar()
             self.difSet.set(1)
-            difficulty = tk.Scale(self.tokenSelector, label=" Schwierigkeitsgrad ", variable=self.difSet, from_=1,
+            difficulty = tk.Scale(self.gameSetup, label=" Schwierigkeitsgrad ", variable=self.difSet, from_=1,
                                   to=30000, orient=HORIZONTAL,
                                   length=150, resolution=100, tickinterval=30000, showvalue=0)
             difficulty.grid(column=0, row=2, padx=8, pady=8)
 
-            tk.Button(self.tokenSelector, text=" Ich fange an ", image=self.smallPics[3], compound="left",
+            tk.Button(self.gameSetup, text=" Ich fange an ", image=self.smallPics[3], compound="left",
                       width=150, command=self._tokenStart).grid(column=0, row=4, padx=4, pady=4)
-            tk.Button(self.tokenSelector, text=" Die KI fängt an ", image=self.smallPics[2], compound="left",
+            tk.Button(self.gameSetup, text=" Die KI fängt an ", image=self.smallPics[2], compound="left",
                       width=150, command=self._kiStart).grid(column=0, row=5, padx=4, pady=4)
 
+    # Rules window closing Button
+    def _rulesClose(self):
+        self.gameRules.destroy()
+        self.gameRules = None
+
+    # Rules child window
+    def rulesWin(self):
+        if self.gameRules is None:
+            self.gameRules = tk.Toplevel()
+            self.gameRules.title(" Regeln TicTacToe ")
+            self.gameRules.resizable(False, False)
+            self.gameRules.protocol("WM_DELETE_WINDOW", self._on_closing)
+
+            rules = tk.Text(self.gameRules, wrap=WORD, height= 15, width=35, font="Arial", spacing1=1)
+            rules.grid(column=0, row=0)
+
+            with open("Data/rules.txt", "r") as f:
+                rules.insert(INSERT, f.read())
+            rules.config(state=DISABLED)
+
+            close = tk.Button(self.gameRules, text="Schließen", command=self._rulesClose)
+            close.grid(column=0, row=1)
 
 # Instanz MainGame wird erstellt und Spiel gestartet
 game = MainGame()
